@@ -1,39 +1,32 @@
-﻿using EFDemo.Data;
-using EFDemo.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using EFDemo.Data;
+using EFDemo.Models;
 
 namespace EFDemo.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly EFDemo.Data.ApplicationDbContext _context;
 
-        public IndexModel(ILogger<IndexModel> logger, ApplicationDbContext context)
+        public IndexModel(EFDemo.Data.ApplicationDbContext context)
         {
-            _logger = logger;
             _context = context;
         }
 
-        public IList<Person> People { get; set; }
-        public void OnGet()
-        {
-            People = _context.Person.ToList();
-        }
+        public IList<Person> Person { get;set; } = default!;
 
-        [BindProperty]
-        public Person Person { get; set; }
-        public IActionResult OnPost()
+        public async Task OnGetAsync()
         {
-            People = _context.Person.ToList();
-            if (!ModelState.IsValid)
+            if (_context.Person != null)
             {
-                return Page();
+                Person = await _context.Person.ToListAsync();
             }
-            _context.Person.Add(Person);
-            _context.SaveChanges();
-            return RedirectToPage("./Index");
         }
     }
 }

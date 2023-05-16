@@ -1,0 +1,60 @@
+﻿@page
+@model EFDemo.Pages.CreateModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Welcome!</h1>
+
+<h4>Enter data</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Person.FirstName" class="control-label"></label>
+                <input asp-for="Person.FirstName" class="form-control" />
+                <span asp-validation-for="Person.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Person.Year" class="control-label"></label>
+                <input asp-for="Person.Year" class="form-control" />
+                <span asp-validation-for="Person.Year" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            @if(Model.Person != null)
+            {
+                @if ((Model.Person.Year % 4 == 0 && Model.Person.Year % 100 != 0) || Model.Person.Year % 400 == 0)
+                {
+                    @if (Model.Person.FirstName == null)
+                    {
+                        <p>Rok @Model.Person.Year. Byl to rok przestepny.</p>
+                    }
+                    else
+                    {
+                        <p>@Model.Person.FirstName urodzil sie w @Model.Person.Year. Byl to rok przestepny.</p>
+                    }
+                }
+                else
+                {
+                    @if (Model.Person.FirstName == null)
+                    {
+                        <p>Rok @Model.Person.Year. Nie byl to rok przestepny.</p>
+                    }
+                    else
+                    {
+                        <p>@Model.Person.FirstName urodzil sie w @Model.Person.Year. Nie byl to rok przestepny.</p>
+                    }
+                }
+            }
+            
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
