@@ -1,5 +1,8 @@
 ﻿@page
 @model EFDemo.Pages.IndexModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Index";
@@ -44,11 +47,34 @@
                 @Html.DisplayFor(modelItem => item.Created)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                <!--<a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |-->
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                @if(SignInManager.IsSignedIn(User))
+                {
+                        <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                }
+                
             </td>
         </tr>
 }
     </tbody>
 </table>
+@{
+    var prevDisabled = !Model.Person.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Person.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Person.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Person.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,25 +8,52 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using EFDemo.Data;
 using EFDemo.Models;
+using ContosoUniversity;
+using System.Configuration;
 
 namespace EFDemo.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly EFDemo.Data.ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public IndexModel(EFDemo.Data.ApplicationDbContext context)
+        public IndexModel(EFDemo.Data.ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
-        public IList<Person> Person { get;set; } = default!;
+        public string NameSort { get; set; }
+        public string DateSort { get; set; }
+        public string CurrentFilter { get; set; }
+        public string CurrentSort { get; set; }
 
-        public async Task OnGetAsync()
+        public PaginatedList<Person> Person { get;set; } = default!;
+
+        public async Task OnGetAsync(string sortOrder, string searchString, int? pageIndex)
         {
+            CurrentSort = sortOrder;
+            NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            DateSort = sortOrder == "Date" ? "date_desc" : "Date";
+
+            IQueryable<Person> personIQ = from s in _context.Person select s;
+            switch (sortOrder)
+            {
+                case "Date":
+                    personIQ = personIQ.OrderBy(s => s.Created);
+                    break;
+                case "date_desc":
+                    personIQ = personIQ.OrderByDescending(s => s.Created);
+                    break;
+                default:
+                    personIQ = personIQ.OrderByDescending(s => s.Created);
+                    break;
+            }
             if (_context.Person != null)
             {
-                Person = await _context.Person.ToListAsync();
+                var pageSize = _configuration.GetValue<int>("PageSize", 4);
+                Person = await PaginatedList<Person>.CreateAsync(personIQ.AsNoTracking(), pageIndex ?? 1, pageSize);
             }
         }
     }
