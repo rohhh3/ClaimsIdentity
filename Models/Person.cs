@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
-namespace EFDemo.Models
+namespace EFDemo.Models 
 {
     public class Person
-    {
+    { 
         public int Id { get; set; }
         [MaxLength(100)]
         [Column(TypeName = "varchar(100)")]
