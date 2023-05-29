@@ -10,15 +10,18 @@ using EFDemo.Data;
 using EFDemo.Models;
 using EFDemo.Services;
 using ContosoUniversity;
+using EFDemo.Interfaces;
+using EFDemo.ViewModels.Person;
 
 namespace EFDemo.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly IConfiguration _configuration;
-        private readonly IPersonInterface _personService;
+        private readonly IPersonService _personService;
+        public ListPersonForListVM Records { get; set; }
 
-        public IndexModel(IConfiguration configuration, IPersonInterface personService)
+        public IndexModel(IConfiguration configuration, IPersonService personService)
         {
             _configuration = configuration;
             _personService = personService;
@@ -37,12 +40,12 @@ namespace EFDemo.Pages
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             DateSort = sortOrder == "Date" ? "date_desc" : "Date";
 
-            var people = await _personService.GetAllPeopleAsync();
-
+            Records = _personService.GetPeopleForList();
+            /*
             switch (sortOrder)
             {
                 case "Date":
-                    people = people.OrderBy(s => s.Created).ToList();
+                    Records = Records.OrderBy(s => s.Created).ToList();
                     break;
                 case "date_desc":
                     people = people.OrderByDescending(s => s.Created).ToList();
@@ -55,7 +58,7 @@ namespace EFDemo.Pages
             var peopleQueryable = people.AsQueryable();
             var pageSize = _configuration.GetValue<int>("PageSize", 4);
             Person = await PaginatedList<Person>.CreateAsync(people, pageIndex ?? 1, pageSize);
-
+            */
         }
     }
 }

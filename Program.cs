@@ -3,6 +3,8 @@ using EFDemo.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EFDemo.Services;
+using EFDemo.Interfaces;
+using EFDemo.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(builder.Configuration.GetConnectionString("EFDemoDB")));
-builder.Services.AddScoped<IPersonInterface, IPersonService>();
+builder.Services.AddTransient<IPersonService,PersonService>();
+builder.Services.AddTransient<IPersonRepository,PersonRepository>();
 
 var app = builder.Build();
 
